@@ -127,31 +127,10 @@ Eigen::VectorXf PlanarQuadrotor::Update(float dt, float time) {
 
 void PlanarQuadrotor::Plot()
 {
-    Eigen::VectorXf x = z_hist.row(0);
-    Eigen::VectorXf y = z_hist.row(1);
-    Eigen::VectorXf theta = z_hist.row(2);
-    Eigen::VectorXf time = z_hist.row(3);
-    matplot::subplot(3,1,1);
-    matplot::title("x");
-    matplot::plot(time,x,"r");
-    matplot::subplot(3,1,2);
-    matplot::title("y");
-    matplot::plot(time,y,"g");
-    matplot::subplot(3,1,3);
-    matplot::title("theta");
-    matplot::plot(time,theta,"b");
-    matplot::show();
+    
 }
 
 void PlanarQuadrotor::addHist(float t)
 {
-    int z_cols=z_hist.cols();
-    if(z_cols==SIZE){
-        //Avoiding aliasing (See here: https://eigen.tuxfamily.org/dox/group__TopicAliasing.html)
-        z_hist.block(0,0,4,z_cols-1) = z_hist.rightCols(z_cols-1);
-        z_cols--;
-    }
-    Eigen::Vector4f temp = {z[0],z[1],z[2],t};
-    z_hist.conservativeResize(z_hist.rows(), z_cols+1);
-    z_hist.col(z_hist.cols()-1) = temp;
+    
 }
