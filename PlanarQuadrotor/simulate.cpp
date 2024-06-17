@@ -66,9 +66,6 @@ int main(int argc, char* args[])
      * 1. Update x, y, theta history vectors to store trajectory of the quadrotor
      * 2. Plot trajectory using matplot++ when key 'p' is clicked
     */
-    std::vector<float> x_history;
-    std::vector<float> y_history;
-    std::vector<float> theta_history;
 
     float time;
 
@@ -98,7 +95,7 @@ int main(int argc, char* args[])
                 }
                 else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p)
                 {
-                    quadrotor.Plot();
+                    //quadrotor.Plot();
                 }
                 
             }
