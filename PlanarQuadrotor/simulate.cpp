@@ -5,8 +5,37 @@
 #include <vector>
 #include <thread>
 #include <matplot/matplot.h>
+#include <iostream>
+#include <cmath>
 
 void plot(float, PlanarQuadrotor);
+
+
+
+const int SAMPLE_RATE = 1000; // Samples per second
+const int AMPLITUDE = 10000;   // Amplitude of the wave
+const float DURATION = 1;        // Duration in seconds
+
+
+void generateSineWave(double frequency, int Amp, std::vector<int16_t>& samples, float duration) {
+    int sampleCount = SAMPLE_RATE * duration;
+    samples.resize(sampleCount);
+    for (int i = 0; i < sampleCount; ++i) {
+        double time = (double)i / SAMPLE_RATE;
+        samples[i] = static_cast<int16_t>(Amp * sin(2.0 * M_PI * frequency * time));
+    }
+}
+
+void audioCallback(void* userdata, Uint8* stream, int len) {
+    std::vector<int16_t>* samples = (std::vector<int16_t>*)userdata;
+    int16_t* buffer = (int16_t*)stream;
+    int sampleCount = len / 2; 
+
+    for (int i = 0; i < sampleCount; ++i) {
+        buffer[i] = (*samples)[i];
+    }
+}
+
 
 Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     /* Calculate LQR gain matrix */
@@ -70,6 +99,26 @@ int main(int argc, char* args[])
      * 2. Plot trajectory using matplot++ when key 'p' is clicked
     */
 
+    double frequency = 440.0; // częstotliwość tonu A
+    std::vector<int16_t> samples;
+    generateSineWave(frequency, AMPLITUDE, samples, DURATION);
+    
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+    std::cerr << "Couldn't initialize SDL: " << SDL_GetError() << std::endl;
+    }
+    SDL_AudioSpec spec;
+    spec.freq = SAMPLE_RATE;
+    spec.format = AUDIO_S16SYS;
+    spec.channels = 1;
+    spec.samples = 100;
+    spec.callback = audioCallback;
+    spec.userdata = (void*)&samples;
+    
+    if (SDL_OpenAudio(&spec, NULL) < 0) {
+    std::cerr << "Couldn't open audio: " << SDL_GetError() << std::endl;
+    }
+    SDL_PauseAudio(0);
+    
     float time=0;
 
     if (init(gWindow, gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) >= 0)
@@ -82,6 +131,8 @@ int main(int argc, char* args[])
 
         while (!quit)
         {
+            Eigen::Vector2f AmpOffset = quadrotor.GravityCompInput() - K * quadrotor.GetControlState();
+            generateSineWave(frequency, 1000 * (AmpOffset[0] + AmpOffset[1]), samples, DURATION);
             //events
             while (SDL_PollEvent(&e) != 0)
             {
