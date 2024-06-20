@@ -2,13 +2,16 @@
 
 #include <Eigen/Dense>
 #include <tuple>
+#include <vector>
 
 #include "lqr.h"
 
 class PlanarQuadrotor {
 private:
     Eigen::VectorXf z = Eigen::VectorXf::Zero(6);
-    Eigen::Matrix4Xf z_hist;
+    std::vector<double> hist_x;
+    std::vector<double> hist_y;
+    std::vector<double> hist_theta;
     Eigen::VectorXf z_dot = Eigen::VectorXf::Zero(6);
     Eigen::VectorXf z_goal = Eigen::VectorXf::Zero(6);
     // m, I, r, g parameters
@@ -25,8 +28,10 @@ public:
     void SetInput(Eigen::Vector2f input);
     void DoCalcTimeDerivatives(); // Shamelessly copied from Drake API
     void DoUpdateState(float dt);
-    Eigen::VectorXf Update(Eigen::Vector2f &input, float dt, float time);
-    Eigen::VectorXf Update(float dt, float time);
-    void Plot();
-    void addHist(float t);
+    Eigen::VectorXf Update(Eigen::Vector2f &input, float dt);
+    Eigen::VectorXf Update(float dt);
+    void Plot(float time);
+    std::vector<double>x_ret() {return this->hist_x;};
+    std::vector<double>y_ret() {return this->hist_y;};
+    std::vector<double>th_ret() {return this->hist_theta;};
 };

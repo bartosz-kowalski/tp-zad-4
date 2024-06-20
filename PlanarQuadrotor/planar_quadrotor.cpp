@@ -107,6 +107,9 @@ void PlanarQuadrotor::DoCalcTimeDerivatives() {
 void PlanarQuadrotor::DoUpdateState(float dt) {
     /* Euler integration */
     z += dt * z_dot;
+    hist_x.push_back(z[0]);
+    hist_y.push_back(z[1]);
+    hist_theta.push_back(z[2]);
 }
 
 void PlanarQuadrotor::SetInput(Eigen::Vector2f input) {
@@ -123,4 +126,14 @@ Eigen::VectorXf PlanarQuadrotor::Update(Eigen::Vector2f& input, float dt) {
 
 Eigen::VectorXf PlanarQuadrotor::Update(float dt) {
     return Update(input, dt);
+}
+
+void PlanarQuadrotor::Plot(float time){
+    //matplot::subplot(4,2,1);
+    matplot::plot(hist_y,hist_x);
+    matplot::title("Y po X");
+    //matplot::subplot(3,1,2);
+    //matplot::plot(matplot::linspace(0,time),hist_theta);
+    //matplot::title("theta po czasie");
+    matplot::show();
 }

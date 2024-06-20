@@ -4,6 +4,9 @@
 #include "simulate.h"
 #include <vector>
 #include <thread>
+#include <matplot/matplot.h>
+
+void plot(float, PlanarQuadrotor);
 
 Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     /* Calculate LQR gain matrix */
@@ -67,7 +70,7 @@ int main(int argc, char* args[])
      * 2. Plot trajectory using matplot++ when key 'p' is clicked
     */
 
-    float time;
+    float time=0;
 
     if (init(gWindow, gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) >= 0)
     {
@@ -95,7 +98,9 @@ int main(int argc, char* args[])
                 }
                 else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p)
                 {
-                    //quadrotor.Plot();
+                    std::thread wykres(plot, time, quadrotor);
+                    wykres.detach();
+                    //plot(time, quadrotor);
                 }
                 
             }
@@ -113,6 +118,7 @@ int main(int argc, char* args[])
             /* Simulate quadrotor forward in time */
             control(quadrotor, K);
             quadrotor.Update(dt);
+            time+=dt;
         }
     }
     SDL_Quit();
@@ -134,4 +140,11 @@ int init(std::shared_ptr<SDL_Window>& gWindow, std::shared_ptr<SDL_Renderer>& gR
         return -1;
     }
     return 0;
+}
+
+void plot(float time, PlanarQuadrotor rotor)
+{
+    matplot::plot(rotor.y_ret(),rotor.x_ret());
+    matplot::title("Y po X");
+    matplot::show();
 }
