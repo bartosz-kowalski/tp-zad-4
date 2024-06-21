@@ -127,13 +127,3 @@ Eigen::VectorXf PlanarQuadrotor::Update(Eigen::Vector2f& input, float dt) {
 Eigen::VectorXf PlanarQuadrotor::Update(float dt) {
     return Update(input, dt);
 }
-
-void PlanarQuadrotor::Plot(float time){
-    //matplot::subplot(4,2,1);
-    matplot::plot(hist_y,hist_x);
-    matplot::title("Y po X");
-    //matplot::subplot(3,1,2);
-    //matplot::plot(matplot::linspace(0,time),hist_theta);
-    //matplot::title("theta po czasie");
-    matplot::show();
-}

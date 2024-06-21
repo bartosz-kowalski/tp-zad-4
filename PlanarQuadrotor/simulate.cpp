@@ -169,7 +169,7 @@ int main(int argc, char* args[])
             /* Simulate quadrotor forward in time */
             control(quadrotor, K);
             quadrotor.Update(dt);
-            time+=dt;
+            time+=dt/100;
         }
     }
     SDL_Quit();
@@ -195,7 +195,35 @@ int init(std::shared_ptr<SDL_Window>& gWindow, std::shared_ptr<SDL_Renderer>& gR
 
 void plot(float time, PlanarQuadrotor rotor)
 {
-    matplot::plot(rotor.y_ret(),rotor.x_ret());
-    matplot::title("Y po X");
-    matplot::show();
+    std::vector<double> x,y,th;
+    for(int i=0;i<rotor.x_ret().size();i++)
+    {
+        if(!(i%100))
+        {
+            x.push_back(rotor.x_ret()[i]);
+            y.push_back(rotor.y_ret()[i]);
+        }
+    }
+    /*if(rotor.th_ret().size()!=0)
+    {
+        for(int i=0;i<rotor.th_ret().size();i++)
+        {
+            if(!(i%100))
+                th.push_back(rotor.th_ret()[i]);
+        }
+    }*/
+    using namespace matplot;
+
+    auto fig = figure(true);
+
+    fig->size(500, 450);
+    auto layout = fig->add_axes({0.1, 0.45, 0.8, 0.4});
+    auto ax1 = layout->plot(x, y);
+    layout->title("Y po X");
+
+    /*layout = fig->add_axes({0.1, 0.05, 0.8, 0.2});
+    auto ax2 = layout->plot(linspace(0, time), th);
+    layout->title("theta w czasie");*/
+
+    fig->show();
 }

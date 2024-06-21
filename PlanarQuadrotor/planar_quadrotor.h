@@ -30,7 +30,6 @@ public:
     void DoUpdateState(float dt);
     Eigen::VectorXf Update(Eigen::Vector2f &input, float dt);
     Eigen::VectorXf Update(float dt);
-    void Plot(float time);
     std::vector<double>x_ret() {return this->hist_x;};
     std::vector<double>y_ret() {return this->hist_y;};
     std::vector<double>th_ret() {return this->hist_theta;};
